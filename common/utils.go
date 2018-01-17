@@ -3,6 +3,7 @@ package common
 import (
 	"fmt"
 	"os"
+	"os/signal"
 )
 
 func CheckError(err error) {
@@ -28,4 +29,20 @@ func ByteArrayCompare(b1 *[]byte, b2 *[]byte) bool {
 
 func Log(obj interface{}) {
 	fmt.Println("*** LOG ", obj)
+}
+
+type HandleExitFunc func() bool
+
+func HandleExit(f HandleExitFunc) {
+	c := make(chan os.Signal, 1)
+   signal.Notify(c, os.Interrupt)
+   go func(){
+      for sig := range c {
+         if sig == os.Interrupt {
+				if f() {
+				   os.Exit(2)
+				}
+         }
+      }
+   }()
 }

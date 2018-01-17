@@ -1,14 +1,17 @@
 package main
 
 import (
-	"net"
-	"sync"
+   "net"
+   "sync"
+   "time"
+   "../common"
 )
 
 type Client struct {
-	id       string
-	username string
-	address  *net.UDPAddr
+   id              string
+   username        string
+   lastMessageTime time.Time
+   address         *net.UDPAddr
 }
 
 // MAIN *********
@@ -16,17 +19,22 @@ type Client struct {
 var wg sync.WaitGroup
 
 func main() {
-	var port string = ":8080"
+   var port string = ":8080"
 
-	var server Server
-	server.Start(port)
+   var server Server
+   defer server.disconnect()
+   common.HandleExit(func () bool {
+      server.disconnect()
+      return true
+   })
+   wg.Add(1)
+   server.start(port)
 
-	// common.CheckError(err)
-	defer server.Disconnect()
+   // common.CheckError(err)
 
-	wg.Add(1)
-	go server.handle()
-	go server.handleCommands()
+   
 
-	wg.Wait()
+   wg.Wait()
 }
+
+
