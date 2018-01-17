@@ -37,7 +37,8 @@ func (s *Server) start(port string) {
    checkError(err, "Server.start")
    go s.handle() // wg.Done
    go s.handleReceivingMessages()
-   go s.handleCommands()
+	go s.handleCommands()
+	common.Log("Server running")
 }
 
 func (s *Server) AddClient(c Client) {
@@ -137,12 +138,12 @@ func (s *Server) handleReceivingMessages() {
          }
       case protocol.ACTION_BROADCAST:
          c := s.clients[msg.Token]
+			msg.Body = c.username + ": " + msg.Body
          // Just send message if the sender exists
          if s.clientExists(c.id) {
             for i := range s.clients {
                // Don't send message to sending client
                if c.id != s.clients[i].id {
-                  msg.Body = c.username + ": " + msg.Body
                   _, err := s.connection.WriteToUDP(msg.Serialize(), s.clients[i].address)
                   checkError(err, "Server.handleReceivingMessages " + s.clients[i].username)
                }

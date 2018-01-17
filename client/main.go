@@ -142,7 +142,6 @@ func main() {
    // *************
    fmt.Print("Enter your name: ")
    client.username = common.Readln()
-   fmt.Println("Username", client.username)
    // *************
 
    client.connection, err = net.DialUDP("udp", nil, udpAddr)
