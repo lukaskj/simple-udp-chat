@@ -47,6 +47,10 @@ func (c* Client) connect() {
 }
 
 func (c *Client) disconnect() {
+	msg := protocol.Message{}
+	msg.Action = protocol.ACTION_DISCONNECT
+	msg.Token = c.id
+	c.connection.Write(msg.Serialize())
 	c.connection.Close()
 	c.connected = false
 	close(c.receivedMessages)
@@ -122,6 +126,7 @@ func main() {
 	// *************
 	fmt.Print("Enter your name: ")
 	fmt.Scanln(&client.username)
+	fmt.Println("Username", client.username)
 	// *************
 
 	client.connection, err = net.DialUDP("udp", nil, udpAddr)

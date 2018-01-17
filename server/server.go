@@ -43,10 +43,8 @@ func (s *Server) AddClient(c Client) {
 }
 
 func (s * Server) clientExists(id string) bool {
-	if(s.clients[id] == Client{}) {
-		return false
-	}
-	return true
+	_, ok := s.clients[id]
+	return ok
 }
 
 func (s *Server) disconnect() {
@@ -105,6 +103,24 @@ func (s *Server) handleReceivingMessages() {
 					_, err = s.connection.WriteToUDP(connectedMsg.Serialize(), s.clients[i].address)
 					checkError(err, "Server.handleReceivingMessages " + s.clients[i].username)
 				}
+			}
+		case protocol.ACTION_DISCONNECT:
+			if s.clientExists(msg.Token) {
+				msg.Action = protocol.ACTION_DISCONNECT
+				c := s.clients[msg.Token]
+				// Just send message if the sender exists
+				msg.Body = " ** " + c.username + " disconnected **"
+				common.Log(msg.Body)
+				if s.clientExists(c.id) {
+					for i := range s.clients {
+						// Don't send message to sending client
+						if c.id != s.clients[i].id {
+							_, err := s.connection.WriteToUDP(msg.Serialize(), s.clients[i].address)
+							checkError(err, "Server.handleReceivingMessages " + s.clients[i].username)
+						}
+					}
+				}
+				delete(s.clients, msg.Token)
 			}
 		case protocol.ACTION_BROADCAST:
 			c := s.clients[msg.Token]
