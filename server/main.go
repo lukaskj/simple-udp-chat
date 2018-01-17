@@ -22,7 +22,7 @@ func main() {
    var port string = ":8080"
 
    var server Server
-   defer server.disconnect()
+   // defer server.disconnect()
    common.HandleExit(func () bool {
       server.disconnect()
       return true
