@@ -38,7 +38,7 @@ func (s *Server) start(port string) {
    go s.handle() // wg.Done
    go s.handleReceivingMessages()
 	go s.handleCommands()
-	common.Log("Server running")
+	common.Log("Server running on port " + port)
 }
 
 func (s *Server) AddClient(c Client) {
