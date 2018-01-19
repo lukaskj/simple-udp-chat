@@ -20,7 +20,7 @@ go build -o ./build/server ./server/main.go ./server/server.go
 ```
 > Currently port 8080 is fixed in code (plans to add port via arguments)
 
-#### Serve commands:
+#### Server commands:
 * **q** or **quit**: shutdown server and send it to all clients
 * **users**: list of connected users
 * **debug**: toggle debug mode (prints all receiving messages to console)
